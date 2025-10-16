@@ -1,10 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import data from './HomeCard'; 
+import remove from '../assets/images/icon-remove.svg'
 
 const MapFile = () => {
+  const [filtered, setfiltered] = useState([]);
+  console.log(filtered);
+  
   return (
+    <section className='w-full'>
+
+      <div className="h-36 bg-[#5ba4a4] bg-[url('/images/bg-header-mobile.svg')] md:bg-[url('/images/bg-header-desktop.svg')] bg-cover bg-center bg-no-repeat"></div> 
+      <div className='flex flex-col gap-6 -mt-16 px-[5%] py-20 '>
+      
+      {filtered.length > 0 && (
+  <div className="flex justify-between items-center p-4 rounded shadow-md bg-white">
+    <div className="flex gap-3 flex-wrap">
+      {filtered.map((item, index) => (
+        <div key={index} className="flex">
+          <div className="flex rounded">
+            <span className="bg-[#effafaff] rounded-l-md text-[#5ba4a4ff] px-2">
+              {item}
+            </span>
+            <button
+              className="bg-[#5ba4a4ff] px-1 rounded-r-md hover:bg-black"
+              onClick={() =>
+                setfiltered((prev) => prev.filter((_, i) => i !== index))
+              }
+            >
+              <img src={remove} alt="" />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    
+    <span
+      onClick={() => setfiltered([])}
+      className="bg-[#effafaff] rounded-md text-[#5ba4a4ff] px-2 cursor-pointer hover:text-black"
+    >
+      Close
+    </span>
+  </div>
+)}
+
+    
     <div className='p-5 bg-[#effafaff]'>
-      {data.map((item) => (
+      {(filtered.length === 0 ? data : data.filter(jobItem => {
+        const tags = [jobItem.level, jobItem.role, ...jobItem.languages, ...jobItem.tools];
+        return filtered.every(tag => tags.includes(tag))
+
+      })
+      ).map((item) => (
         <div key={item.id} className={`relative flex flex-col md:flex-row justify-between md:items-center bg-white p-6 my-10 mx-4 md:y-4 md:m-6 shadow-md border-[#5ba4a4ff]  ${
     item.isFeatured ? 'border-l-4' : ''
   } rounded-md`}>
@@ -25,15 +72,20 @@ const MapFile = () => {
             </div>
           </div>
           <div className='flex items-center gap-3'>
-            <button className='bg-[#effafaff] font-normal text-[15px] text-[#5ba4a4ff] px-1.5 py-0.5'>{item.role}</button>
-            <button className='bg-[#effafaff] font-normal text-[15px] text-[#5ba4a4ff] px-1.5 py-0.5'>{item.level}</button>
+            <button onClick={() =>  setfiltered(prev => prev.includes(item.role) ? prev : [...prev, item.role])} className='bg-[#effafaff] font-normal text-[15px] text-[#5ba4a4ff] px-1.5 py-0.5'>{item.role}</button>
+            <button onClick={()=> setfiltered(prev => prev.includes(item.level)  ? prev : [...prev, item.level])} className='bg-[#effafaff] font-normal text-[15px] text-[#5ba4a4ff] px-1.5 py-0.5'>{item.level}</button>
             {item.languages.map((lang) => (
-              <button className='bg-[#effafaff] font-normal text-[15px] text-[#5ba4a4ff] px-1.5 py-0.5' key={lang}>{lang}</button>
+              <button onClick={() => setfiltered(prev => prev.includes(lang) ? prev : [...prev, lang])} className='bg-[#effafaff] font-normal text-[15px] text-[#5ba4a4ff] px-1.5 py-0.5' key={lang}>{lang}</button>
+            ))}
+            {item.tools.map((tool) => (
+              <button onClick={() => setfiltered(prev => prev.includes(tool) ? prev  : [...prev, tool] )} className='bg-[#effafaff] font-normal text-[15px] text-[#5ba4a4ff] px-1.5 py-0.5' key={tool}>{tool}</button>
             ))}
           </div>
         </div>
       ))}
     </div>
+    </div>
+    </section>
   );
 };
 
